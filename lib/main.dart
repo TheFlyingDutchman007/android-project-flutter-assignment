@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
@@ -9,6 +7,7 @@ import 'package:hello_me/authRepo.dart';
 import 'package:hello_me/loginPage.dart';
 import 'package:provider/provider.dart';
 import 'package:hello_me/userStateManagement.dart';
+import 'package:snapping_sheet/snapping_sheet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +80,10 @@ class _RandomWordsState extends State<RandomWords> {
                       })
             ],
           ),
-          body: _buildSuggestions());
+          body:  SnappingSheet(
+            child: _buildSuggestions(),
+            grabbingHeight: 75,
+          ));
     });
   }
 
@@ -197,36 +199,6 @@ class _RandomWordsState extends State<RandomWords> {
                 ).toList();
                 return ListView(children: divided);
               }),
-          );
-
-          final tiles = _saved.map(
-            (WordPair pair) {
-              return ListTile(
-                  title: Text(
-                    pair.asPascalCase,
-                    style: _biggerFont,
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.delete_outline_outlined,
-                      color: Colors.red,
-                    ),
-                    onPressed: () async {
-                        await _deleteSnackBar(pair);
-                    }
-                  ));
-            },
-          );
-          final divided = ListTile.divideTiles(
-            context: context,
-            tiles: tiles,
-          ).toList();
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Saved Suggestions'),
-            ),
-            body: ListView(children: divided),
           );
         },
       ),

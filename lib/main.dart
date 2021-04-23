@@ -67,6 +67,22 @@ class _RandomWordsState extends State<RandomWords> {
   final _snappingSheetController = SnappingSheetController();
 
   @override
+  void initState() {
+    final auth = AuthRepository.instance();
+    // TODO: implement initState
+    super.initState();
+    if (auth.status == Status.Authenticated){
+      getWords();
+    }
+  }
+  void getWords() async{
+    final auth = AuthRepository.instance();
+    final db = DatabaseService.instance();
+    Set<WordPair> fromDB = await db.getWords(auth.user!);
+    _saved.addAll(fromDB);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AuthRepository>(builder: (context, auth, snapshot) {
       return Scaffold(

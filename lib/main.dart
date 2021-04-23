@@ -8,6 +8,8 @@ import 'package:hello_me/loginPage.dart';
 import 'package:provider/provider.dart';
 import 'package:hello_me/userStateManagement.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
+import 'package:hello_me/grabbingWidget.dart';
+import 'package:hello_me/snappingSheetProfileSectionWidget.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +64,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _saved = <WordPair>{};
   final _biggerFont = const TextStyle(fontSize: 18);
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthRepository>(builder: (context, auth, snapshot) {
@@ -80,10 +83,21 @@ class _RandomWordsState extends State<RandomWords> {
                       })
             ],
           ),
-          body:  SnappingSheet(
+          // TODO: EDIT WITH FUN!!!
+          body:
+          (auth.status == Status.Authenticated)
+          ? SnappingSheet(
             child: _buildSuggestions(),
+            grabbing: GrabbingWidget(),
             grabbingHeight: 75,
-          ));
+            sheetAbove: null,
+            sheetBelow: SnappingSheetContent(
+              sizeBehavior: SheetSizeStatic(height: 300),
+              draggable: true,
+              child: ProfileSection(),
+            ),
+          )
+      : _buildSuggestions());
     });
   }
 
@@ -122,33 +136,33 @@ class _RandomWordsState extends State<RandomWords> {
 
   Widget _buildRow(WordPair pair) {
     final alreadySaved = _saved.contains(pair);
-      return ListTile(
-        title: Text(
-          pair.asPascalCase,
-          style: _biggerFont,
-        ),
-        trailing: Icon(
-          alreadySaved ? Icons.favorite : Icons.favorite_border,
-          color: alreadySaved ? Colors.red : null,
-        ),
-        onTap: () async {
-          setState(() {
-            if (alreadySaved) {
-              _saved.remove(pair);
-            } else {
-              _saved.add(pair);
-            }
-          });
-          final auth = AuthRepository.instance();
-          if (auth.status == Status.Authenticated){
-            if(alreadySaved){
-              await DatabaseService.instance().removePair(auth.user!, pair);
-            }else{
-              await DatabaseService.instance().addPair(auth.user!, pair);
-            }
+    return ListTile(
+      title: Text(
+        pair.asPascalCase,
+        style: _biggerFont,
+      ),
+      trailing: Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: () async {
+        setState(() {
+          if (alreadySaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
           }
-        },
-      );
+        });
+        final auth = AuthRepository.instance();
+        if (auth.status == Status.Authenticated) {
+          if (alreadySaved) {
+            await DatabaseService.instance().removePair(auth.user!, pair);
+          } else {
+            await DatabaseService.instance().addPair(auth.user!, pair);
+          }
+        }
+      },
+    );
   }
 
   void _pushSaved() {
@@ -166,39 +180,38 @@ class _RandomWordsState extends State<RandomWords> {
               title: Text('Saved Suggestions'),
             ),
             body: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setIt){
-                if (_saved.isEmpty)
-                  return Center(
-                    child: Text("No Favorites"),
-                  );
-                final tiles = _saved.map(
-                      (WordPair pair) {
-                    return ListTile(
-                        title: Text(
-                          pair.asPascalCase,
-                          style: _biggerFont,
-                        ),
-                        trailing: IconButton(
-                            icon: Icon(
-                              Icons.delete_outline_outlined,
-                              color: Colors.red,
-                            ),
-                            onPressed: () async {
-                              setIt((){
-                                /*if (_saved.length == 1)
-                                  Navigator.of(context).pop();*/
-                              });
-                              await _deleteSnackBar(pair);
-                            }
-                        ));
-                  },
+                builder: (BuildContext context, StateSetter setIt) {
+              if (_saved.isEmpty)
+                return Center(
+                  child: Text("No Favorites"),
                 );
-                final divided = ListTile.divideTiles(
-                  context: context,
-                  tiles: tiles,
-                ).toList();
-                return ListView(children: divided);
-              }),
+              final tiles = _saved.map(
+                (WordPair pair) {
+                  return ListTile(
+                      title: Text(
+                        pair.asPascalCase,
+                        style: _biggerFont,
+                      ),
+                      trailing: IconButton(
+                          icon: Icon(
+                            Icons.delete_outline_outlined,
+                            color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            setIt(() {
+                              /*if (_saved.length == 1)
+                                  Navigator.of(context).pop();*/
+                            });
+                            await _deleteSnackBar(pair);
+                          }));
+                },
+              );
+              final divided = ListTile.divideTiles(
+                context: context,
+                tiles: tiles,
+              ).toList();
+              return ListView(children: divided);
+            }),
           );
         },
       ),
@@ -207,7 +220,8 @@ class _RandomWordsState extends State<RandomWords> {
 
   void _loginScreen() {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (BuildContext context) => LoginPage(_saved)),
+      MaterialPageRoute<void>(
+          builder: (BuildContext context) => LoginPage(_saved)),
     );
   }
 
@@ -218,7 +232,7 @@ class _RandomWordsState extends State<RandomWords> {
     setState(() {
       _saved.remove(pair);
     });
-    if (auth.status == Status.Authenticated){
+    if (auth.status == Status.Authenticated) {
       db.removePair(user!, pair);
     }
   }

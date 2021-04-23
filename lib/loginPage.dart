@@ -16,6 +16,7 @@ class LoginPage extends StatelessWidget {
         title: Text('Login'),
         centerTitle: true,
       ),
+      resizeToAvoidBottomInset: false,
       body: LoginScreen(saved),
     );
   }
@@ -60,19 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 1,
                   fontSize: 16),
             ),
-            SizedBox(height: 45.0),
+            SizedBox(height: 35.0),
             TextField(
               controller: emailController,
               decoration: InputDecoration(
                   border: OutlineInputBorder(), hintText: 'Email'),
             ),
-            SizedBox(height: 45.0),
+            SizedBox(height: 35.0),
             TextField(
               controller: passwordController,
               decoration: InputDecoration(
                   border: OutlineInputBorder(), hintText: 'Password'),
             ),
-            SizedBox(height: 45.0),
+            SizedBox(height: 35.0),
             Consumer<AuthRepository>(builder: (context, auth, _) {
               if (auth.status == Status.Authenticating) {
                 return Center(child: CircularProgressIndicator());
@@ -102,7 +103,49 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(20)))),
               );
             }),
-            SizedBox(height: 45.0)
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () => showModalBottomSheet<dynamic>(
+                  context: context,
+                  builder: (BuildContext context){
+                    return Wrap(
+                      children: [Container(
+                        padding: EdgeInsets.all(15),
+                        color: Colors.white,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 10,),
+                            Text('Please confirm your password below'),
+                            Divider(thickness: 2.5, color: Colors.black54),
+                            SizedBox(height: 12.5,),
+                            TextField(
+                              decoration: InputDecoration(
+                                border: UnderlineInputBorder(),
+                                hintText: 'password'
+                              ),
+                            ),
+                            SizedBox(height: 12.5,),
+                            ElevatedButton(
+                                onPressed: null,
+                                child: Text('Confirm'),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(Colors.green[400]),
+                                  //minimumSize: MaterialStateProperty.all(Size(300, 45)),
+                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)))),
+                            )
+                          ],
+                        ),
+                      ),]
+                    );
+                  }),
+              child: Text('New user? Click to sign up'),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.green[400]),
+                  minimumSize: MaterialStateProperty.all(Size(300, 45)),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)))),
+            )
           ],
         ));
   }

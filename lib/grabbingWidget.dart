@@ -41,7 +41,9 @@ class GrabbingWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('welcome back $email'),
+            Text('welcome back, $email',
+            style: TextStyle(fontWeight: FontWeight.w700,
+            fontSize: 16),),
             Icon(Icons.keyboard_arrow_up)
           ],
         ),

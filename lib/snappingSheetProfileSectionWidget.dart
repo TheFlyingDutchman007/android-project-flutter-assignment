@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_me/authRepo.dart';
 
 class ProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final email = AuthRepository.instance().user!.email;
     return Container(
       //margin: EdgeInsets.all(30),
       padding: EdgeInsets.all(10),
@@ -30,10 +32,15 @@ class ProfileSection extends StatelessWidget {
           SizedBox(width: 20,),
           Column(
             children: [
-              Text('fun is fun',), // TODO: style!!
+              Text('$email',
+              style: TextStyle(fontWeight: FontWeight.bold,
+              fontSize: 18),), // TODO: style!!
               ElevatedButton(
                   onPressed: () => print('NICO'),
-                  child: Text('Change Avatar')
+                  child: Text('Change Avatar'),
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green[800]),
+                ),
               )
             ],
           )

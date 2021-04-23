@@ -95,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                   else{
                     FocusScope.of(context).unfocus();
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(loginErrorSnackBar);
                   }
                 },
@@ -133,7 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () async{
                                   final auth = AuthRepository.instance();
                                   final db = FirebaseFirestore.instance;
-                                  if (passwordController.text == passwordConfirmController.text){
+                                  if (passwordController.text == passwordConfirmController.text
+                                  && passwordController.text.isNotEmpty){
                                     await auth.signUp(emailController.text, passwordController.text);
                                     db.collection('users').doc(auth.user!.uid).set(
                                       {

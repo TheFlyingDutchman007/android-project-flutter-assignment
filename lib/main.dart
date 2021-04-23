@@ -64,6 +64,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _saved = <WordPair>{};
   final _biggerFont = const TextStyle(fontSize: 18);
+  final _snappingSheetController = SnappingSheetController();
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +88,9 @@ class _RandomWordsState extends State<RandomWords> {
           body:
           (auth.status == Status.Authenticated)
           ? SnappingSheet(
+            controller: _snappingSheetController,
             child: _buildSuggestions(),
-            grabbing: GrabbingWidget(),
+            grabbing: GrabbingWidget(_snappingSheetController),
             grabbingHeight: 75,
             sheetAbove: null,
             sheetBelow: SnappingSheetContent(

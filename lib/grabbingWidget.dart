@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:hello_me/authRepo.dart';
+import 'package:snapping_sheet/snapping_sheet.dart';
 
 class GrabbingWidget extends StatelessWidget {
   final email = AuthRepository.instance().user!.email;
+  final SnappingSheetController controller;
+  GrabbingWidget(this.controller);
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => print('tapped'),
+      onTap: () {
+        print(controller.currentPosition); // for debugging
+        if (controller.currentPosition > 135.854854 || controller.currentPosition <= 37.5) {
+          controller.snapToPosition(
+              SnappingPosition.factor(
+                positionFactor: 0.2,
+                snappingCurve: Curves.elasticOut,
+                snappingDuration: Duration(milliseconds: 400)
+              ));
+        }
+        else{
+          controller.snapToPosition(
+              SnappingPosition.pixels(
+                  positionPixels: 37.5,
+                  snappingCurve: Curves.elasticOut,
+                  snappingDuration: Duration(milliseconds: 400)
+              ));
+        }
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.grey,

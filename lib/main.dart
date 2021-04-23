@@ -69,7 +69,6 @@ class _RandomWordsState extends State<RandomWords> {
   @override
   void initState() {
     final auth = AuthRepository.instance();
-    // TODO: implement initState
     super.initState();
     if (auth.status == Status.Authenticated){
       getWords();

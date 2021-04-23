@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_me/userStateManagement.dart';
 import 'package:provider/provider.dart';
 import 'package:hello_me/authRepo.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatelessWidget {
   final saved;
@@ -34,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _LoginScreenState(this.saved);
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final passwordConfirmController = TextEditingController();
   final loginErrorSnackBar =
       SnackBar(content: Text("There was an error logging into the app"));
   //final debugSnackBar = SnackBar(content: Text("logged in!!"));
@@ -92,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.of(context).pop();
                   }
                   else{
+                    FocusScope.of(context).unfocus();
                     ScaffoldMessenger.of(context).showSnackBar(loginErrorSnackBar);
                   }
                 },
@@ -119,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Divider(thickness: 2.5, color: Colors.black54),
                             SizedBox(height: 12.5,),
                             TextField(
+                              controller: passwordConfirmController,
                               decoration: InputDecoration(
                                 border: UnderlineInputBorder(),
                                 hintText: 'password'
@@ -126,7 +130,33 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 12.5,),
                             ElevatedButton(
-                                onPressed: null,
+                                onPressed: () async{
+                                  final auth = AuthRepository.instance();
+                                  final db = FirebaseFirestore.instance;
+                                  if (passwordController.text == passwordConfirmController.text){
+                                    await auth.signUp(emailController.text, passwordController.text);
+                                    db.collection('users').doc(auth.user!.uid).set(
+                                      {
+                                        "email" : auth.user!.email,
+                                        "words" : []
+                                      }
+                                    );
+                                    //print("Statusssss");
+                                    //print(auth.status);
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }
+                                  else{
+                                    // TODO: fix hidden snackBar or do something else
+                                    final errorMatch = SnackBar(
+                                        content: Text(
+                                            "Passwords must match"));
+                                    FocusScope.of(context).unfocus();
+                                    Navigator.of(context).pop();
+                                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(errorMatch);
+                                  }
+                                },
                                 child: Text('Confirm'),
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(Colors.green[400]),

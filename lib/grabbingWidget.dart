@@ -10,7 +10,7 @@ class GrabbingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print(controller.currentPosition); // for debugging
+        //print(controller.currentPosition); // for debugging
         if (controller.currentPosition > 135.854854 || controller.currentPosition <= 37.5) {
           controller.snapToPosition(
               SnappingPosition.factor(

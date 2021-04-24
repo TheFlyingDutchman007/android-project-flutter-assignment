@@ -145,6 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                     //print("Statusssss");
                                     //print(auth.status);
+                                    //File file =File('assets/images/noImage.png');
+                                    //StorageService.instance().uploadFile(file);
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                   }
